@@ -27,8 +27,8 @@
 		}
 		
 		Draggy.prototype.setupDefaults = function() {
-			this.CURSOR_DRAGGABLE = 'default'; // 'url(\''+contextPath+'/images/draggable_surface.png\'), auto';
-			this.CURSOR_DRAGGING = 'default'; // 'url(\''+contextPath+'/images/drag_surface.png\'), auto';
+			this.CURSOR_DRAGGABLE = 'move';// 'url(\''+contextPath+'/images/Drag1.png\'), auto';
+			this.CURSOR_DRAGGING = 'move'; // 'url(\''+contextPath+'/images/Drag2.png\'), auto';
 			
 			this.options.z_index = 999;
 			
@@ -55,18 +55,23 @@
 						'cursor' : this.CURSOR_DRAGGABLE,
 						'position' : 'relative'
 					})
-					.mousedown(mousedownTargetHandler)
+					.mousedown(mousedownTargetHandler)					
 					.data('draggy', this),
 				scrollParentHandler = function(e){
 						_this.scroll(e);
 					},
+				mousewheelParentHandler = function(e, d, dx, dy) {
+						_this.mousewheel(e, d, dx, dy);
+						// return false;
+					},
 				jq_parent = jq_target.parent()
 					.css({
 						'position' : 'relative',
-						'overflow' : 'hidden', // it was auto originally					
+						'overflow' : 'hidden', // it was auto originally						
 						'overflow-x' : 'hidden',
 						'overflow-y' : 'hidden'
 					})					
+					.bind('mousewheel', mousewheelParentHandler)
 					.scroll(scrollParentHandler),
 				jq_grand_parent = jq_parent.parent(),
 				target_width = jq_target.width(),
@@ -112,7 +117,7 @@
 				scroll_y_outer_height,
 				scroll_y_offset,
 				displacement_factor_y;
-
+	
 			if (is_scroll_y_applicable) {	
 				jq_parent
 					.css({
@@ -121,6 +126,16 @@
 					.width(function(){
 						return $(this).width() - scroll_width - 2;
 					});
+				
+				// updating references
+				target_outer_width = jq_target.outerWidth(true);
+				target_outer_height = jq_target.outerHeight(true);
+				parent_offset = jq_parent.offset();
+				parent_width = jq_parent.width();
+				parent_height = jq_parent.height();
+				parent_outer_width = jq_parent.outerWidth(true); // includes width + left right margin + left right padding
+				parent_outer_height = jq_parent.outerHeight(true);
+				
 				jq_scroll_container_y = $('<div/>')
 					.css({
 						'position' : 'relative',
@@ -130,7 +145,7 @@
 						'z-index' : this.options.z_index,
 						'float' : 'right'
 					})
-					.height(parent_height)
+					.height(parent_height - 2) // 2 pixels will be covered by borders
 					.insertAfter(jq_parent);
 				jq_clear = $('<br/>')
 					.css({
@@ -141,7 +156,17 @@
 				container_y_offset = jq_scroll_container_y.offset();
 				container_y_height = jq_scroll_container_y.height();
 				container_y_outer_height = jq_scroll_container_y.outerHeight(true);
-				scroll_y_height = ( target_outer_height > parent_outer_height ? parent_outer_height / target_outer_height : 1 ) * container_y_height;
+				scroll_y_height = ( target_outer_height > parent_outer_height ? parent_outer_height / target_outer_height : 1 ) * container_y_outer_height - 2; // 2 pixels will be covered by borders
+				
+				// alert('scroll_y_height: '+scroll_y_height);
+				
+				/*
+				alert('parent_height('+parent_height+') / target_height('+target_height+') = '+parent_height / target_height);
+				alert('parent_outer_height('+parent_outer_height+') / target_height('+target_height+') = '+parent_outer_height / target_height);
+				alert('parent_height('+parent_height+') / target_outer_height('+target_outer_height+') = '+parent_height / target_outer_height);
+				alert('parent_outer_height('+parent_outer_height+') / target_outer_height('+target_outer_height+') = '+parent_outer_height / target_outer_height);
+				*/
+				
 				jq_scroll_y = $('<div/>')
 					.css({
 						'position' : 'absolute',
@@ -169,7 +194,13 @@
 					.appendTo(jq_scroll_container_y);
 				scroll_y_outer_height = jq_scroll_y.outerHeight(true);
 				scroll_y_offset = jq_scroll_y.offset();
-				displacement_factor_y = (container_y_outer_height - scroll_y_outer_height) / (target_outer_height - parent_outer_height);
+				displacement_factor_y = (container_y_outer_height - scroll_y_outer_height) / (target_outer_height - parent_height) /* - 0.065 */ ;
+			// 	displacement_factor_y = (container_y_height - scroll_y_outer_height) / (target_outer_height - parent_height);
+				
+			//	alert('parent_height('+parent_outer_height+') / target_height('+target_outer_height+') : '+parent_outer_height / target_outer_height+'; scroll_y_height: '+scroll_y_height);
+				
+			//	alert('target_outer_height: '+target_outer_height);
+			//	alert('displacement_factor_y: '+displacement_factor_y);
 			}
 			
 			if (is_scroll_x_applicable) {
@@ -185,7 +216,7 @@
 //						'top' : parent_offset.top + jq_parent.height() - parent_diff_height - scroll_width,
 //						'left': parent_offset.left + parent_diff_width
 //					})
-					.width(jq_parent.width()-2)
+					.width(jq_parent.width())
 					.hover(function(e){
 						_this.mouseoverScrollContainer(this, e);
 					}, function(e){
@@ -239,6 +270,7 @@
 			
 			this.__mousedownTargetHandler = mousedownTargetHandler;
 			this.__scrollParentHandler = scrollParentHandler;
+			this.__mousewheelParentHandler = mousewheelParentHandler;
 			this.__mousemoveDocHandler = mousemoveDocHandler;
 			this.__mouseupDocHandler = mouseupDocHandler;
 		};
@@ -253,6 +285,17 @@
 				.css({
 					'cursor' : this.CURSOR_DRAGGING
 				});
+		};
+		
+		Draggy.prototype.mousewheel = function(e, d, dx, dy) {
+			// this.scrollLeft -= (d * 30);
+			var jq_parent = this.jq_parent,
+				scroll_left = jq_parent
+					.scrollLeft();
+			
+			// console.log('d: '+d+'; dx: '+dx+'; dy: '+dy);
+			
+			jq_parent.scrollLeft(scroll_left + (dx*30));
 		};
 		
 		Draggy.prototype.mouseup = function(e) {
@@ -335,7 +378,7 @@
 			
 			css_left = css_left.substring(0, css_left.indexOf('px'));
 			
-			console.log('[mousedownScroll] saving left: '+left+'; css_left: '+css_left);
+			// console.log('[mousedownScroll] saving left: '+left+'; css_left: '+css_left);
 			
 			this.is_mouse_down_on_scroll_x = true;
 			this.scroll_left = left;
@@ -365,7 +408,7 @@
 				scroll_x_outer_width = this.scroll_x_outer_width,
 				container_x_outer_width = this.container_x_outer_width;
 			
-			console.log('original_left('+original_left+') - distance.x('+distance.x+') / displacement_factor_x('+displacement_factor_x+') = '+left);
+			// console.log('original_left('+original_left+') - distance.x('+distance.x+') / displacement_factor_x('+displacement_factor_x+') = '+left);
 			// console.log('left('+left+') + scroll_x_outer_width('+scroll_x_outer_width+') : '+(left + scroll_x_outer_width)+' < container_x_outer_width: '+container_x_outer_width);
 			
 			/*
@@ -376,7 +419,7 @@
 			}
 			*/
 			
-			console.log('[mousemoveScroll] setting left: '+left);
+			// console.log('[mousemoveScroll] setting left: '+left);
 	//		jq_o.css({
 	//			left : left + 'px'
 	//		});
@@ -435,7 +478,7 @@
 				displacement_factor_y = this.displacement_factor_y,
 				top = ( original_top - distance.y ) / displacement_factor_y;
 			
-			console.log('[mousemoveScrollY] setting top: '+top);
+			// console.log('[mousemoveScrollY] setting top: '+top);
 			
 			jq_parent.scrollTop(top);
 		};
@@ -500,21 +543,25 @@
 			
 			if (jq_scroll_container_y) {
 				container_y_offset = jq_scroll_container_y.offset();
-				displacement_factor_y = this.displacement_factor_y;
+				displacement_factor_y = this.displacement_factor_y;				
 				jq_scroll_y = this.jq_scroll_y
 					.offset({
 						'top' : container_y_offset.top + ( scroll_top * displacement_factor_y ) 
 					});
+				// console.log('scroll_top('+scroll_top+') * displacement_factor_y('+displacement_factor_y+'): '+(scroll_top * displacement_factor_y));
+				console.log('container_y_offset.top('+container_y_offset.top+') + ( scroll_top('+scroll_top+') * displacement_factor_y('+displacement_factor_y+') ) = '+(container_y_offset.top + ( scroll_top * displacement_factor_y )));
 			}
 		};
 		
 		Draggy.prototype.destroy = function(e) {
-			alert('destroy invoked');
+			
 			var jq_doc = this.jq_doc,
 				jq_parent = this.jq_parent,
 				jq_target = this.jq_target,
 				jq_scroll_container_x = this.jq_scroll_container_x,
 				jq_scroll_container_y = this.jq_scroll_container_y;
+			
+			// alert('destroy invoked on '+jq_target.attr('id'));
 			
 			if (jq_scroll_container_x) {
 				jq_scroll_container_x.remove();
@@ -526,7 +573,9 @@
 			
 			// unbind observers from global elements
 			jq_target.unbind('mousedown', this.__mousedownTargetHandler);
-			jq_parent.unbind('scroll', this.__scrollParentHandler);
+			jq_parent
+				.unbind('scroll', this.__scrollParentHandler)
+				.unbind('mousewheel', this.__mousewheelParentHandler);
 			jq_doc
 				.unbind('mousemove', this.__mousemoveDocHandler)
 				.unbind('mouseup', this.__mouseupDocHandler);
