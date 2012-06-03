@@ -1,0 +1,58 @@
+<html>
+	<head>
+		<link href="style.css" rel="stylesheet" type="text/css" />
+		<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="jquery.draggy.js"></script>
+		<style>
+			div#hs {
+				overflow-x: scroll;
+			}
+			
+			div#hs p {
+				width: 237%;
+			}
+			
+			div#vs {
+				overflow-y: scroll;
+				height: 100px;
+			}
+			
+			div#vs p {
+				height: auto;
+			}
+		</style>
+		<script type="text/javascript">
+			$(function(){
+				var jq_hs = $('div#hs')
+					.children()
+					.draggy();
+				
+				var jq_vs = $('div#vs')
+					.children()
+					.draggy();
+			});
+		</script>
+		<title>Draggy - A jQuery Scrollbar Plugin</title>
+	</head>
+	<body>
+		<div>
+			<h1>Draggy - A jQuery Scrollbar Plugin</h1>
+			<h2>Overview</h2>
+			<p>Draggy is a jQuery plugin that allows to conveniently replace browser's default scrollbars with stylish ones.</p>
+			<h2>Examples</h2>
+			<h3>Horizontal Scrollbar</h3>
+			<div id="hs">
+				<p>The Ice and Fire series is generally praised for its realism and incredibly expansive world.[67] Believing that magic should be used moderately in the epic fantasy genre,[17] George R. R. Martin set out to make the story feel more like historical fiction than contemporary fantasy, with less emphasis on magic and sorcery in favor of battles, political intrigue and the characters.[16] With the amount of magic gradually increasing from the start, the series is still to end with less overt magic than most contemporary fantasies.[26] In Martin's eyes, literary effective magic needs to represent strange and dangerous forces beyond human comprehension,[49] not advanced alien technologies or formulaic spells.[76] As such, the characters understand only the natural aspects of their world, but not the magical elements like the Others.[67]</p>
+			</div>
+			<h3 class="mt20">Vertical Scrollbar</h3>
+			<div id="vs">
+				<p>Since Martin drew on historical sources to build the Ice and Fire world, The Guardian saw a strong resemblance between Westeros and England in the period of the Wars of the Roses.[77] The Atlantic regarded A Song of Ice and Fire as "more a story of politics than one of heroism, a story about humanity wrestling with its baser obsessions than fulfilling its glorious potential" where the emergent power struggle stems from the feudal system's repression and not from the fight between good and evil.[73] Martin not only wanted to reflect the frictions of the medieval class structures in the novels, but also explore the consequences of the leaders' decisions, as general goodness does not automatically make competent leaders and vice versa.[57]
+
+A common theme in the fantasy genre is the battle between good and evil,[57] which Martin rejects for not mirroring the real world.[22] Attracted to gray characters instead of orcs and angels,[78] Martin instead endorses Nobel Prize laureate William Faulkner's view that only the human heart in conflict with itself was worth writing about.[57] Just like people's capacity for good and for evil in real life, Martin explores the questions of redemption and character change in the Ice and Fire series.[79] The multiple viewpoint structure allows characters to be explored from many sides so that, unlike lots of other fantasy, the supposed villains can provide their viewpoint.[61] The reader may then decide about good and evil through the novels' actions and politics.[31]
+
+Although fantasy comes from an imaginative realm, Martin sees an honest necessity to reflect the real world where people die sometimes ugly deaths, even beloved people.[26] Main characters are killed off so that the reader will not expect the supposed hero to come through unscathed and instead feel the character's fear with each page turn.[25] The novels are also to reflect the substantial death rates in war.[55] The deaths of supernumerary extras or orcs have no major effect on readers, whereas a friend's death has much more emotional impact.[69] Martin prefers a hero's sacrifice to say something profound about human nature.[18]</p>				
+			</div>
+			<p class="mt20">Developed by <a href="http://www.umarashfaq.com">Umar Ashfaq</a>.</p>
+		</div>
+	</body>
+</html>
