@@ -1,4 +1,4 @@
-draggy
+Draggy
 ======
 
-A jQuery based scrollbar
+Draggy is a jQuery plugin which creates GMail style scrollbars.
