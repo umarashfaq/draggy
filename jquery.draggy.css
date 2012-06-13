@@ -20,7 +20,7 @@ div.__draggy.__horizontal > div {
 
 div.__draggy.__vertical {
     width: 10px;
-	float: left;
+	float: right;
 }
 
 div.__draggy.__vertical > div {

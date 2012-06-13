@@ -1,8 +1,10 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<link href="style.css" rel="stylesheet" type="text/css" />
 		<link href="jquery.draggy.css" rel="stylesheet" type="text/css" />
 		<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="jquery.mousewheel.js"></script>
 		<script type="text/javascript" src="jquery.draggy.js"></script>
 		<style>
 			div#hs {
@@ -23,7 +25,23 @@
 			}
 		</style>
 		<script type="text/javascript">
-			$(function(){
+			$(window).load(function(){
+				var window_height = $(window).height(),
+					jq_div_header = $('div#header'),
+					jq_div_body = $('div#body')
+					.height(window_height - 200);
+				
+				// alert(window_height);
+				
+				jq_div_body
+					.children()
+					.draggy({
+						'draggability' : 'none', // horizontal, vertical, both, none (default)
+						'mousewheel' : 'vertical',
+						'arrowkeys' : 'vertical',
+						'scrolls' : 'auto'
+					});
+			
 				var jq_hs = $('div#hs')
 					.children()
 					.draggy();
@@ -31,55 +49,93 @@
 				var jq_vs = $('div#vs')
 					.children()
 					.draggy();
+				
+					
 			});
 		</script>
 		<title>Draggy - A jQuery Scrollbar Plugin</title>
 	</head>
 	<body>
 		<div>
-			<h1>Draggy - A jQuery Scrollbar Plugin</h1>
-			<h2>Overview</h2>
-			<p>Draggy is a jQuery plugin that allows to conveniently create GMail style scrollbars.</p>
-			<h2>Quick Start</h2>
-			<p>Using Draggy in your project is simple: just include <span class="code">jquery.draggy.js</span> and <span class="code">jquery.draggy.css</span> in your HTML page and invoke following code:</p>
-			<p class="code">$('#my-element').draggy();</p>
-			<h2>Examples</h2>
-			<h3>Horizontal Scrollbar</h3>
-			<div id="hs">
-				<p>The Ice and Fire series is generally praised for its realism and incredibly expansive world.[67] Believing that magic should be used moderately in the epic fantasy genre,[17] George R. R. Martin set out to make the story feel more like historical fiction than contemporary fantasy, with less emphasis on magic and sorcery in favor of battles, political intrigue and the characters.[16] With the amount of magic gradually increasing from the start, the series is still to end with less overt magic than most contemporary fantasies.[26] In Martin's eyes, literary effective magic needs to represent strange and dangerous forces beyond human comprehension,[49] not advanced alien technologies or formulaic spells.[76] As such, the characters understand only the natural aspects of their world, but not the magical elements like the Others.[67]</p>
+			<div id="header">
+				<h1 style="margin: 0;">Draggy - A jQuery Scrollbar Plugin</h1>
 			</div>
-			<h3 class="mt20">Vertical Scrollbar</h3>
-			<div id="vs">
-				<p>Since Martin drew on historical sources to build the Ice and Fire world, The Guardian saw a strong resemblance between Westeros and England in the period of the Wars of the Roses.[77] The Atlantic regarded A Song of Ice and Fire as "more a story of politics than one of heroism, a story about humanity wrestling with its baser obsessions than fulfilling its glorious potential" where the emergent power struggle stems from the feudal system's repression and not from the fight between good and evil.[73] Martin not only wanted to reflect the frictions of the medieval class structures in the novels, but also explore the consequences of the leaders' decisions, as general goodness does not automatically make competent leaders and vice versa.[57]
-
-A common theme in the fantasy genre is the battle between good and evil,[57] which Martin rejects for not mirroring the real world.[22] Attracted to gray characters instead of orcs and angels,[78] Martin instead endorses Nobel Prize laureate William Faulkner's view that only the human heart in conflict with itself was worth writing about.[57] Just like people's capacity for good and for evil in real life, Martin explores the questions of redemption and character change in the Ice and Fire series.[79] The multiple viewpoint structure allows characters to be explored from many sides so that, unlike lots of other fantasy, the supposed villains can provide their viewpoint.[61] The reader may then decide about good and evil through the novels' actions and politics.[31]
-
-Although fantasy comes from an imaginative realm, Martin sees an honest necessity to reflect the real world where people die sometimes ugly deaths, even beloved people.[26] Main characters are killed off so that the reader will not expect the supposed hero to come through unscathed and instead feel the character's fear with each page turn.[25] The novels are also to reflect the substantial death rates in war.[55] The deaths of supernumerary extras or orcs have no major effect on readers, whereas a friend's death has much more emotional impact.[69] Martin prefers a hero's sacrifice to say something profound about human nature.[18]</p>				
-			</div>
-			<h2 class="mt20">Technical Detail</h2>
-			<p>You can invoke draggy on any DOM element you like. Draggy will automatically calculate if the element is overflowing out of it's parent's dimensions and attach scrollbars accordingly.</p>
-			<h3>Target Width Greater Than Parent Width</h3>
-			<img src="images/e1.png"/>
-			<p>When target width is greater than it's parent width, draggy will attach a horizontal scrollbar with the parent.</p>
-			<h3>Target Height Greater Than Parent Height</h3>
-			<img src="images/e2.png"/>
-			<p>When target height is greater than it's parent height, draggy will attach a vertical scrollbar with the parent.</p>
-			<h3>Target Width And Height Greater Than Parent Width And Height</h3>
-			<img src="images/e3.png"/>
-			<p>When target width and height are greater than it's parent's width and height, draggy will attach horizontal and vertical scrollbars with the parent.</p>
-			<h2>API</h2>
-			<h3>Construction</h3>
-			<p>As shown before, applying draggy is simple:</p>
-			<ol>
-				<li>Just select an element with jQuery and make sure that its dimensions (width or height) are greater than those of it's parent.</li>
-				<li>Invoke <span class="code">draggy()</span> on it.</li>
-			</ol>
-			<p class="code">$(selector).draggy();</p>
-			<h3>Destruction</h3>
-			<p class="code">$(selector).draggy('kill');</p>
-			<h3>Configuration</h3>
-			<p>Draggy currently has no configurations available, but they can be introduced if required by users.</p>
-			<p>Developed by <a href="http://www.umarashfaq.com">Umar Ashfaq</a>.</p>
+			<div id="body">
+				<div>
+					<h2>Overview</h2>
+					<p>Draggy is a lightweight jQuery plugin that allows to conveniently create GMail style scrollbars.</p>
+					<h2>Quick Start</h2>
+					<p>Using Draggy in your project is simple: just include <span class="code">jquery.draggy.js</span> and <span class="code">jquery.draggy.css</span> in your HTML page and invoke following code:</p>
+					<p class="code">$('#my-element').draggy();</p>
+					<h2>Examples</h2>
+					<h3>Horizontal Scrollbar</h3>
+					<div id="hs">
+						<p>The Ice and Fire series is generally praised for its realism and incredibly expansive world.[67] Believing that magic should be used moderately in the epic fantasy genre,[17] George R. R. Martin set out to make the story feel more like historical fiction than contemporary fantasy, with less emphasis on magic and sorcery in favor of battles, political intrigue and the characters.[16] With the amount of magic gradually increasing from the start, the series is still to end with less overt magic than most contemporary fantasies.[26] In Martin's eyes, literary effective magic needs to represent strange and dangerous forces beyond human comprehension,[49] not advanced alien technologies or formulaic spells.[76] As such, the characters understand only the natural aspects of their world, but not the magical elements like the Others.[67]</p>
+					</div>
+					<h3 class="mt20">Vertical Scrollbar</h3>
+					<div id="vs">
+						<p>Since Martin drew on historical sources to build the Ice and Fire world, The Guardian saw a strong resemblance between Westeros and England in the period of the Wars of the Roses.[77] The Atlantic regarded A Song of Ice and Fire as "more a story of politics than one of heroism, a story about humanity wrestling with its baser obsessions than fulfilling its glorious potential" where the emergent power struggle stems from the feudal system's repression and not from the fight between good and evil.[73] Martin not only wanted to reflect the frictions of the medieval class structures in the novels, but also explore the consequences of the leaders' decisions, as general goodness does not automatically make competent leaders and vice versa.[57]
+		
+		A common theme in the fantasy genre is the battle between good and evil,[57] which Martin rejects for not mirroring the real world.[22] Attracted to gray characters instead of orcs and angels,[78] Martin instead endorses Nobel Prize laureate William Faulkner's view that only the human heart in conflict with itself was worth writing about.[57] Just like people's capacity for good and for evil in real life, Martin explores the questions of redemption and character change in the Ice and Fire series.[79] The multiple viewpoint structure allows characters to be explored from many sides so that, unlike lots of other fantasy, the supposed villains can provide their viewpoint.[61] The reader may then decide about good and evil through the novels' actions and politics.[31]
+		
+		Although fantasy comes from an imaginative realm, Martin sees an honest necessity to reflect the real world where people die sometimes ugly deaths, even beloved people.[26] Main characters are killed off so that the reader will not expect the supposed hero to come through unscathed and instead feel the character's fear with each page turn.[25] The novels are also to reflect the substantial death rates in war.[55] The deaths of supernumerary extras or orcs have no major effect on readers, whereas a friend's death has much more emotional impact.[69] Martin prefers a hero's sacrifice to say something profound about human nature.[18]</p>				
+					</div>
+					<h2 class="mt20">Theoretical Detail</h2>
+					<p>You can invoke draggy on any DOM element you like. Draggy will automatically calculate if the element is overflowing out of it's parent's dimensions and attach scrollbars accordingly.</p>
+					<h3>Target Width Greater Than Parent Width</h3>
+					<img src="images/e1.png"/>
+					<p>When target width is greater than it's parent width, draggy will attach a horizontal scrollbar with the parent.</p>
+					<h3>Target Height Greater Than Parent Height</h3>
+					<img src="images/e2.png"/>
+					<p>When target height is greater than it's parent height, draggy will attach a vertical scrollbar with the parent.</p>
+					<h3>Target Width And Height Greater Than Parent Width And Height</h3>
+					<img src="images/e3.png"/>
+					<p>When target width and height are greater than it's parent's width and height, draggy will attach horizontal and vertical scrollbars with the parent.</p>
+					<h2>API</h2>
+					<h3>Construction</h3>
+					<p>As shown before, applying draggy is simple:</p>
+					<ol>
+						<li>Just select an element with jQuery and make sure that its dimensions (width or height) are greater than those of it's parent.</li>
+						<li>Invoke <span class="code">draggy()</span> on it.</li>
+					</ol>
+					<p class="code">$(selector).draggy();</p>
+					<p><strong>IMPORTANT: </strong>Draggy should be instantiated on an element after all of it's content has been loaded. So if the element contains any images, draggy should be instantiated on it after images have been loaded. jQuery's <span class="code">$(document).ready(callback)</span> invokes a callback when only DOM has been loaded; it doesn't wait for images. Thankfully, we have another function, <span class="code">$(window).load(callback)</span> which invokes the callback after all of it's images have been downloaded.</p>
+					<h3>Destruction</h3>
+					<p class="code">$(selector).draggy('kill');</p>
+					<h3>Configuration</h3>
+					<p>Draggy is highly configurable. You can easily tweak it's behavior using one of the following properties. To apply a property, simply pass it on with a value in constructor.</p>
+					<pre class="code">
+$(selector).draggy({
+	'draggability' : 'both'
+});</pre>	
+					<ul>
+						<li><strong>draggability</strong> 'horizontal' | 'vertical' | 'both' | 'none' (default)</li>
+						<li><strong>mousewheel</strong> 'horizontal' | 'vertical' | 'both' | 'none' (default)
+						<p>It requires <a href="https://github.com/brandonaaron/jquery-mousewheel">jquery.mousewheel.js</a>.</p>
+						</li>
+						<li><strong>arrowkeys</strong> 'horizontal' | 'vertical' | 'both' | 'none' (default)
+						<p>For now, you can associate arrowkeys with only one instance of draggy on a page. If you try to associate arrowkeys with multiple instances, they will only work for the instance they got associated with in the last.</p>
+						</li>
+						<li><strong>scrolls</strong> 'horizontal' | 'vertical' | 'both' | 'none' | 'auto' (default)</li>
+					</ul>	
+					<h2>Wishlist</h2>
+					<p>Following are the features that I wish to add to draggy in future:</p>
+					<ul>
+						<li>Fix some minor bugs on IE8/Chrome.</li>
+						<li>Ability to specify custom dragging cursors.</li>
+						<li>Ability instantiate draggy on a parent div itself instead of it's descendent.</li>
+						<li>Click responsiveness to scroll container.</li>
+						<li>Ability to update itself on browser resize.</li>
+						<li>Custom events to hide and show scrolls.</li>
+						<li>Graceful degradation for older browsers.</li>
+						<li>Make code more efficient so that it is faster and shorter.</li>
+					</ul>
+					<p>If I have missed anything do let me know, I would gladly add it to this list.</p>
+					<h2>Feedback</h2>
+					<p>Your feedback/suggestions are very important so please feel free to write to me at <span class="code">umar dot mughal 2 at gmail dot com</span>. If you find any bug in draggy, please take a moment to <a href="https://github.com/umarashfaq/draggy/issues">report</a> it to github.</p>			
+				</div>
+			</div>			
 		</div>
+		<p>Developed by <a href="http://www.umarashfaq.com">Umar Ashfaq</a> | <a href="https://github.com/umarashfaq/draggy/issues">Report an issue / Request a feature</a></p>
 	</body>
 </html>

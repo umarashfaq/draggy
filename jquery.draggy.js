@@ -1,5 +1,7 @@
 /**
- * Draggy does what jQuery UI's draggable can't.
+ * Draggy does what jQuery UI's draggable can't. Draggy is a jQuery plugin that allows to conveniently create GMail style scrollbars.
+ * Documentation can be found at http://www.umarashfaq.com/draggy.html
+ * Please report issues at https://github.com/umarashfaq/draggy/issues
  * 
  * @author Umar Ashfaq
  * @since May 30, 2012
@@ -33,28 +35,28 @@
 			
 			this.options.z_index = 999;
 			
-			this.options.scrollbar_container_color = 'transparent';
-			this.options.scrollbar_container_border = '1px solid transparent';
-			this.options.scrollbar_container_hover_color = '#F2F2F2';
-			this.options.scrollbar_container_hover_border = '1px solid #D9D9D9';
-			
-			this.options.scrollbar_color = '#CBCBCB';
-			this.options.scrollbar_border = '1px solid #B6B6B6';
-			this.options.scrollbar_hover_color = '#909090';
-			this.options.scrollbar_hover_border = '1px solid #666666';
+			this.options.draggability = this.options.draggability ? this.options.draggability : 'none';
+			this.options.mousewheel = this.options.mousewheel ? this.options.mousewheel : 'none';
+			this.options.arrowkeys = this.options.arrowkeys ? this.options.arrowkeys : 'none';
+			this.options.scrolls = this.options.scrolls ? this.options.scrolls : 'auto';
 		};
 		
 		Draggy.prototype.init = function() {
 			var _this = this,
 				scroll_width = 10,
-				jq_body = $('body'),
+				keydownParentHandler = function(e) {
+					// console.log('[keydownParentHandler] keydown detected ... ');
+					_this.keydown(e);
+					// return false;
+				},
+				jq_body = $('body')
+					.bind('keydown', keydownParentHandler),
 				mousedownTargetHandler = function(e) {
-						_this.mousedown(e);
-						return false;
+						_this.mousedown(e);						
 					},
 				jq_target = this.jq_target
 					.css({
-						'cursor' : this.CURSOR_DRAGGABLE,
+					/*	'cursor' : this.CURSOR_DRAGGABLE, */
 						'position' : 'relative'
 					})
 					.mousedown(mousedownTargetHandler)					
@@ -74,6 +76,7 @@
 						'overflow-y' : 'hidden'
 					})					
 					.bind('mousewheel', mousewheelParentHandler)
+//					.bind('keypress', keydownParentHandler)
 					.scroll(scrollParentHandler),
 				jq_grand_parent = jq_parent.parent(),
 				target_width = jq_target.width(),
@@ -119,14 +122,32 @@
 				scroll_y_outer_height,
 				scroll_y_offset,
 				displacement_factor_y;
-	
+			if (this.options.scrolls==='vertical' || this.options.scrolls==='both') {
+				is_scroll_y_applicable = true;
+			} else if (this.options.scrolls==='horizontal' || this.options.scrolls==='none') {
+				is_scroll_y_applicable = false;
+			}
+			
+			if (this.options.scrolls==='horizontal' || this.options.scrolls==='both') {
+				is_scroll_x_applicable = true;
+			} else if (this.options.scrolls==='vertical' || this.options.scrolls==='none') {
+				is_scroll_x_applicable = false;
+			}
+					
+			if (this.options.draggability==='horizontal' || this.options.draggability==='vertical' || this.options.draggability==='both') {
+				jq_target = this.jq_target
+					.css({
+						'cursor' : this.CURSOR_DRAGGABLE
+					});
+			}
+					
 			if (is_scroll_y_applicable) {	
 				jq_parent
 					.css({
 						'float' : 'left'
 					})
 					.width(function(){
-						return $(this).width() - scroll_width - 2;
+						return $(this).width() - scroll_width - 2 - 2;
 					});
 				
 				// updating references
@@ -142,7 +163,7 @@
 					.addClass('__draggy')
 					.addClass('__vertical')
 					.addClass('__state_1')
-					.height(parent_height - 2) // 2 pixels will be covered by borders
+					.height(parent_outer_height - 2) // 2 pixels will be covered by borders
 					.mouseover(function(e){
 						return _this.mouseoverScrollYContainer(e);
 					})
@@ -224,7 +245,7 @@
 //						'top' : parent_offset.top + jq_parent.height() - parent_diff_height - scroll_width,
 //						'left': parent_offset.left + parent_diff_width
 //					})
-					.width(jq_parent.width())
+					.width(parent_outer_width - 2)
 					.mouseover(function(e) {
 						return _this.mouseoverScrollContainer(e, true);
 						// return false;
@@ -232,12 +253,21 @@
 					.mouseout(function(e) {
 						return _this.mouseoutScrollContainer(e);
 						// return false;
-					})
-					.insertAfter(jq_parent);
+					});
+				
+				if (is_scroll_y_applicable) {
+					jq_scroll_container_x.insertAfter(jq_clear);
+				} else {
+					jq_scroll_container_x.insertAfter(jq_parent);
+				}
+				
 				container_x_offset = jq_scroll_container_x.offset();
 				container_x_width = jq_scroll_container_x.width();
 				container_x_outer_width = jq_scroll_container_x.outerWidth(true);
-				scroll_x_width = ( target_width > parent_width ? parent_width / target_width : 1 ) * container_x_width;
+				scroll_x_width = ( target_outer_width > parent_outer_width ? parent_outer_width / target_outer_width : 1 ) * container_x_width;
+				
+				// alert('( target_outer_width('+target_outer_width+') > parent_outer_width('+parent_outer_width+') ? parent_outer_width('+parent_outer_width+') / target_outer_width('+target_outer_width+') : 1 ) * container_x_width('+container_x_width+') = '+scroll_x_width);
+				
 				jq_scroll_x = $('<div/>')
 					/*
 					.css({
@@ -295,30 +325,42 @@
 			this.scroll_left = this.jq_parent.scrollLeft();	
 			this.scroll_top = this.jq_parent.scrollTop();
 			
-			var jq_target = this.jq_target
-				.css({
-					'cursor' : this.CURSOR_DRAGGING
-				});
+			if (this.options.draggability==='horizontal' || this.options.draggability==='vertical' || this.options.draggability==='both') {
+				var jq_target = this.jq_target
+					.css({
+						'cursor' : this.CURSOR_DRAGGING
+					});
+			}
 		};
 		
 		Draggy.prototype.mousewheel = function(e, d, dx, dy) {
 			// this.scrollLeft -= (d * 30);
 			var jq_parent = this.jq_parent,
 				scroll_left = jq_parent
-					.scrollLeft();
+					.scrollLeft(),
+				scroll_top = jq_parent
+					.scrollTop();
 			
 			// console.log('d: '+d+'; dx: '+dx+'; dy: '+dy);
 			
-			jq_parent.scrollLeft(scroll_left + (dx*30));
+			if (this.options.mousewheel==='horizontal' || this.options.mousewheel==='both') {
+				jq_parent.scrollLeft(scroll_left + (dx*30));
+			}
+			
+			if (this.options.mousewheel==='vertical' || this.options.mousewheel==='both') {
+				jq_parent.scrollTop(scroll_top - (dy*30));
+			}
 		};
 		
 		Draggy.prototype.mouseup = function(e) {
 			this.is_mouse_down = false;
 			
-			var jq_target = this.jq_target
-				.css({
-					'cursor' : this.CURSOR_DRAGGABLE
-				});
+			if (this.options.draggability==='horizontal' || this.options.draggability==='vertical' || this.options.draggability==='both') {
+				var jq_target = this.jq_target
+					.css({
+						'cursor' : this.CURSOR_DRAGGABLE
+					});
+			}
 		};
 		
 		Draggy.prototype.mousemove = function(e) {
@@ -340,8 +382,39 @@
 				current_scroll_left = scroll_left + distance.x;
 				current_scroll_top = scroll_top + distance.y;
 				
-				jq_parent.scrollLeft(current_scroll_left);
-				jq_parent.scrollTop(current_scroll_top);
+				if (this.options.draggability==='horizontal' || this.options.draggability==='both' ) {
+					jq_parent.scrollLeft(current_scroll_left);
+				}
+				
+				if (this.options.draggability==='vertical' || this.options.draggability==='both' ) {
+					jq_parent.scrollTop(current_scroll_top);
+				}
+			}
+		};
+		
+		Draggy.prototype.keydown = function(e) {
+			
+			var jq_parent = this.jq_parent,
+				kc = e.which ? e.which : e.keyCode,
+				scroll_top = jq_parent.scrollTop(),
+				scroll_left = jq_parent.scrollLeft(),
+				displacement = 10;
+			
+			// console.log('[keydown] kc: '+kc);
+			
+			/*
+			 * 37 - left
+			 * 38 - up
+			 * 39 - right
+			 * 40 - down
+			 */
+			
+			if ((kc===37 || kc===39) && (this.options.arrowkeys==='horizontal' || this.options.arrowkeys==='both')) {
+				jq_parent.scrollLeft(scroll_left + (displacement*(kc===37?-1:1)));
+			}
+			
+			if ((kc===38 || kc===40) && (this.options.arrowkeys==='vertical' || this.options.arrowkeys==='both')) {
+				jq_parent.scrollTop(scroll_top + (displacement*(kc===38?-1:1)));
 			}
 		};
 		
@@ -361,7 +434,7 @@
 		};
 		
 		Draggy.prototype.mouseoverScrollContainer = function(e, is_mouse_over_scroll_x_container) {
-			console.log('[mouseoverScrollContainer] mouseover scroll_container_x detected.');
+			// console.log('[mouseoverScrollContainer] mouseover scroll_container_x detected.');
 			this.setState('x', 2);			
 			this.is_mouse_over_scroll_x_container = true /* is_mouse_over_scroll_x_container */;
 			return false;
@@ -370,14 +443,14 @@
 		
 		Draggy.prototype.mouseoutScrollContainer = function(e) {
 			// console.log('mouseoutScrollContainer() invoked ... ');
-			console.log('[mouseoutScrollContainer] mouseout scroll_container_x detected.');
+			// console.log('[mouseoutScrollContainer] mouseout scroll_container_x detected.');
 			this.setState('x');
 			this.is_mouse_over_scroll_x_container = false;
 			return false;
 		};
 		
 		Draggy.prototype.mouseoverScroll = function(e) {
-			console.log('[mouseoutScroll] mouseover scroll_x detected.');
+			// console.log('[mouseoutScroll] mouseover scroll_x detected.');
 			
 			if (!this.is_mouse_down_on_scroll_x) {
 				this.setState('x', 3);
@@ -388,7 +461,7 @@
 		};
 		
 		Draggy.prototype.mouseoutScroll = function(e) {
-			console.log('[mouseoutScroll] mouseout scroll_x detected.');			
+			// console.log('[mouseoutScroll] mouseout scroll_x detected.');			
 			if (!this.is_mouse_down_on_scroll_x /* && !this.is_mouse_over_scroll_x_container */ ) {
 				this.setState('x');
 				/*
@@ -549,7 +622,7 @@
 				displacement_factor_y = this.displacement_factor_y,
 				top = ( original_top - distance.y ) / displacement_factor_y;
 			
-			console.log('[mousemoveScrollY] ( original_top('+original_top+') - distance.y('+distance.y+') ) / displacement_factor_y ('+displacement_factor_y+') = '+top);
+			// console.log('[mousemoveScrollY] ( original_top('+original_top+') - distance.y('+distance.y+') ) / displacement_factor_y ('+displacement_factor_y+') = '+top);
 			
 			// console.log('[mousemoveScrollY] setting top: '+top);
 			
@@ -617,7 +690,7 @@
 				is_mouse_over_scroll_y_container = this.is_mouse_over_scroll_x_container,
 				is_mouse_down = this.is_mouse_down;
 			
-			console.log('is_mouse_over_scroll_x_container: '+is_mouse_over_scroll_x_container);
+			// console.log('is_mouse_over_scroll_x_container: '+is_mouse_over_scroll_x_container);
 			
 			if (is_mouse_down_on_scroll_x) {
 				this.mouseupScroll(e);				
@@ -668,7 +741,7 @@
 						'top' : container_y_offset.top + ( scroll_top * displacement_factor_y ) 
 					});
 				// console.log('scroll_top('+scroll_top+') * displacement_factor_y('+displacement_factor_y+'): '+(scroll_top * displacement_factor_y));
-				console.log('container_y_offset.top('+container_y_offset.top+') + ( scroll_top('+scroll_top+') * displacement_factor_y('+displacement_factor_y+') ) = '+(container_y_offset.top + ( scroll_top * displacement_factor_y )));
+				// console.log('container_y_offset.top('+container_y_offset.top+') + ( scroll_top('+scroll_top+') * displacement_factor_y('+displacement_factor_y+') ) = '+(container_y_offset.top + ( scroll_top * displacement_factor_y )));
 			}
 		};
 		
