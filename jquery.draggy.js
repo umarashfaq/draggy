@@ -4,10 +4,11 @@
  * @author Umar Ashfaq
  * @since May 30, 2012
  */
-(function($){
+(function ($) {
+	'use strict';
 	var Draggy;
 	
-	Draggy = (function(){
+	Draggy = (function() {
 		
 		/**
 		 * target is the child element whose dimensions are greater than than it's parent element.
@@ -16,7 +17,7 @@
 		 * It'll also make child draggable, so that you can scroll even without using scrollbars.
 		 */
 		function Draggy(target, options) {
-			this.target = target;			
+			this.target = target;
 			this.jq_target = $(target)
 				.draggy('kill'); // kill any previous instances attached with this target
 			
@@ -43,11 +44,11 @@
 			this.options.scrollbar_hover_border = '1px solid #666666';
 		};
 		
-		Draggy.prototype.init = function (){
+		Draggy.prototype.init = function() {
 			var _this = this,
 				scroll_width = 10,
 				jq_body = $('body'),
-				mousedownTargetHandler = function(e){
+				mousedownTargetHandler = function(e) {
 						_this.mousedown(e);
 						return false;
 					},
@@ -58,7 +59,7 @@
 					})
 					.mousedown(mousedownTargetHandler)					
 					.data('draggy', this),
-				scrollParentHandler = function(e){
+				scrollParentHandler = function(e) {
 						_this.scroll(e);
 					},
 				mousewheelParentHandler = function(e, d, dx, dy) {
@@ -101,11 +102,11 @@
 				container_y_outer_height,
 				scroll_y_height,
 				jq_scroll_y,
-				mousemoveDocHandler = function(e){
+				mousemoveDocHandler = function(e) {
 						_this.mousemoveDoc(e);
 						return false;
 					},
-				mouseupDocHandler = function(e){
+				mouseupDocHandler = function(e) {
 						_this.mouseupDoc(e);
 						return false;
 					},
@@ -183,13 +184,13 @@
 						'left': -1
 					})
 					*/
-					.mouseover(function(e){
+					.mouseover(function(e) {
 						return _this.mouseoverScrollY(e);
 					})
-					.mouseout(function(e){
+					.mouseout(function(e) {
 						return _this.mouseoutScrollY(e);
 					})				
-					.mousedown(function(e){
+					.mousedown(function(e) {
 						return _this.mousedownScrollY(e);
 					})	
 					.height(scroll_y_height)
@@ -224,11 +225,11 @@
 //						'left': parent_offset.left + parent_diff_width
 //					})
 					.width(jq_parent.width())
-					.mouseover(function(e){
+					.mouseover(function(e) {
 						return _this.mouseoverScrollContainer(e, true);
 						// return false;
 					})
-					.mouseout(function(e){
+					.mouseout(function(e) {
 						return _this.mouseoutScrollContainer(e);
 						// return false;
 					})
@@ -252,15 +253,15 @@
 					})
 					*/
 					.width(scroll_x_width)
-					.mouseover(function(e){
+					.mouseover(function(e) {
 						return _this.mouseoverScroll(e);
 						// return false;
 					})
-					.mouseout(function(e){
+					.mouseout(function(e) {
 						return _this.mouseoutScroll(e);
 						// return false;
 					})				
-					.mousedown(function(e){
+					.mousedown(function(e) {
 						return _this.mousedownScroll(e);
 						// return false;
 					})		
