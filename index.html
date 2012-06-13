@@ -39,7 +39,10 @@
 		<div>
 			<h1>Draggy - A jQuery Scrollbar Plugin</h1>
 			<h2>Overview</h2>
-			<p>Draggy is a jQuery plugin that allows to conveniently replace browser's default scrollbars with stylish ones.</p>
+			<p>Draggy is a jQuery plugin that allows to conveniently create GMail style scrollbars.</p>
+			<h2>Quick Start</h2>
+			<p>Using Draggy in your project is simple: just include <span class="code">jquery.draggy.js</span> and <span class="code">jquery.draggy.css</span> in your HTML page and invoke following code:</p>
+			<p class="code">$('#my-element').draggy();</p>
 			<h2>Examples</h2>
 			<h3>Horizontal Scrollbar</h3>
 			<div id="hs">
@@ -53,7 +56,30 @@ A common theme in the fantasy genre is the battle between good and evil,[57] whi
 
 Although fantasy comes from an imaginative realm, Martin sees an honest necessity to reflect the real world where people die sometimes ugly deaths, even beloved people.[26] Main characters are killed off so that the reader will not expect the supposed hero to come through unscathed and instead feel the character's fear with each page turn.[25] The novels are also to reflect the substantial death rates in war.[55] The deaths of supernumerary extras or orcs have no major effect on readers, whereas a friend's death has much more emotional impact.[69] Martin prefers a hero's sacrifice to say something profound about human nature.[18]</p>				
 			</div>
-			<p class="mt20">Developed by <a href="http://www.umarashfaq.com">Umar Ashfaq</a>.</p>
+			<h2 class="mt20">Technical Detail</h2>
+			<p>You can invoke draggy on any DOM element you like. Draggy will automatically calculate if the element is overflowing out of it's parent's dimensions and attach scrollbars accordingly.</p>
+			<h3>Target Width Greater Than Parent Width</h3>
+			<img src="images/e1.png"/>
+			<p>When target width is greater than it's parent width, draggy will attach a horizontal scrollbar with the parent.</p>
+			<h3>Target Height Greater Than Parent Height</h3>
+			<img src="images/e2.png"/>
+			<p>When target height is greater than it's parent height, draggy will attach a vertical scrollbar with the parent.</p>
+			<h3>Target Width And Height Greater Than Parent Width And Height</h3>
+			<img src="images/e3.png"/>
+			<p>When target width and height are greater than it's parent's width and height, draggy will attach horizontal and vertical scrollbars with the parent.</p>
+			<h2>API</h2>
+			<h3>Construction</h3>
+			<p>As shown before, applying draggy is simple:</p>
+			<ol>
+				<li>Just select an element with jQuery and make sure that its dimensions (width or height) are greater than those of it's parent.</li>
+				<li>Invoke <span class="code">draggy()</span> on it.</li>
+			</ol>
+			<p class="code">$(selector).draggy();</p>
+			<h3>Destruction</h3>
+			<p class="code">$(selector).draggy('kill');</p>
+			<h3>Configuration</h3>
+			<p>Draggy currently has no configurations available, but they can be introduced if required by users.</p>
+			<p>Developed by <a href="http://www.umarashfaq.com">Umar Ashfaq</a>.</p>
 		</div>
 	</body>
 </html>
